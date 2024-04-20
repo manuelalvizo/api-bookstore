@@ -48,23 +48,23 @@ export class BooksService {
   }
 
   async findAll(page: number, limit: number) {
-    let libros;
-    let totalElementos; // Declara la variable list fuera del bloque try
+    let books;
+    let totalElements; // Declara la variable list fuera del bloque try
     const skip = (page - 1) * limit; // Calcula el número de documentos a omitir
     try {
       const [resultList, totalList] = await Promise.all([
         this.bookModule.find({}, '-__v -_id').skip(skip).limit(limit), // Lista paginada
         this.bookModule.countDocuments() // Total de elementos
       ]);
-      libros = resultList;
-      totalElementos = totalList; // Asigna el valor a list
+      books = resultList;
+      totalElements = totalList; // Asigna el valor a list
     } catch (error) {
       throw new HttpException('Ocurrió un error al obtener los libros', HttpStatus.CONFLICT);
     }
-    if (libros.length === 0) {
+    if (books.length === 0) {
       throw new HttpException('No se encontraron elementos', HttpStatus.NOT_FOUND);
     }
-    return { libros, totalElementos };
+    return { books, totalElements };
   }
   
   async findOne(id: string) {

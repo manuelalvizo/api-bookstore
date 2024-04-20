@@ -27,8 +27,8 @@ export class CreateBookDto {
     @ApiProperty({ description: 'Año de publicación del libro', minLength: 4, maxLength: 4 })
     @IsNotEmpty({ message: 'El año de publicación es obligatorio' })
     @IsInt({ message: 'El año de publicación debe ser un número entero' })
-    @Min(1111, { message: 'El número de páginas debe ser un año valido' })
-    @Max(9999, { message: 'El número de páginas debe ser un año valido' })
+    @Min(1111, { message: 'El año debe ser un año valido' })
+    @Max(9999, { message: 'El año debe páginas debe ser un año valido' })
     year_publication: number;
 
     @ApiProperty({ description: 'ISBN del libro', minLength: 13, maxLength: 13 })

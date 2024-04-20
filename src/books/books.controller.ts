@@ -9,7 +9,7 @@ import { Roles } from 'src/guardianes/roles.decorador';
 import { QueryDto } from './dto/query.dto';
 
 @ApiTags('books')
-@Controller('books')
+@Controller('api/v1/books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
