@@ -127,6 +127,7 @@ export class BooksController {
   @Patch(':id')
   @UseGuards(RoleGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiResponse({ 
     status: 200, 
     description: 'Datos del libro actualizado', 
