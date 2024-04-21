@@ -25,8 +25,8 @@ export class BooksController {
   @Roles('admin', 'read', 'write')
   @UseGuards(RoleGuard)
   findAll(@Query() queryDto: QueryDto) {
-    const { page, limit } = queryDto; // Obtén la página y el límite de la consulta
-    return this.booksService.findAll(page, limit);
+    const { page, limit, filter } = queryDto; // Obtén la página y el límite de la consulta
+    return this.booksService.findAll(page, limit, filter);
   }
 
   @Roles('admin', 'read', 'write')

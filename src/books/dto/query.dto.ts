@@ -6,4 +6,7 @@ export class QueryDto {
 
   @IsOptional()
   limit?: number;
+
+  @IsOptional()
+  filter?: string;
 }

@@ -47,23 +47,36 @@ export class BooksService {
     }
   }
 
-  async findAll(page: number, limit: number) {
+  async findAll(page: number, limit: number, filter: string) {
     let books;
-    let totalElements; // Declara la variable list fuera del bloque try
-    const skip = (page - 1) * limit; // Calcula el número de documentos a omitir
+    let totalElements;
+
+    const skip = (page - 1) * limit;
+    let query = {};
+    
+    if (filter) {
+      query = Object.keys(JSON.parse(filter)).reduce((acc, key) => {
+        acc[key] = { $regex: new RegExp(JSON.parse(filter)[key], 'i') }; // Utiliza expresiones regulares insensibles a mayúsculas y minúsculas
+        return acc;
+      }, {});
+    }
+
     try {
       const [resultList, totalList] = await Promise.all([
-        this.bookModule.find({}, '-__v -_id').skip(skip).limit(limit), // Lista paginada
-        this.bookModule.countDocuments() // Total de elementos
+        this.bookModule.find(query, '-__v -_id').skip(skip).limit(limit),
+        this.bookModule.countDocuments(query)
       ]);
+
       books = resultList;
-      totalElements = totalList; // Asigna el valor a list
+      totalElements = totalList;
     } catch (error) {
       throw new HttpException('Ocurrió un error al obtener los libros', HttpStatus.CONFLICT);
     }
+
     if (books.length === 0) {
       throw new HttpException('No se encontraron elementos', HttpStatus.NOT_FOUND);
     }
+
     return { books, totalElements };
   }
   
