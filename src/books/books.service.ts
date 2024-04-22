@@ -7,9 +7,7 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class BooksService {
-  constructor(
-    @InjectModel(Book.name) private bookModule: Model<Book>,
-  ) {}
+  constructor(@InjectModel(Book.name) private bookModule: Model<Book>) {}
 
   async create(createBookDto: CreateBookDto) {
     const firstChar = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Código ASCII para A-Z
@@ -37,12 +35,12 @@ export class BooksService {
       if (error.code === 11000 && error.keyPattern && error.keyPattern.title) {
         throw new HttpException(
           'El libro ya existe, verificar información',
-          HttpStatus.CONFLICT
+          HttpStatus.CONFLICT,
         );
       }
       throw new HttpException(
         'Ocurrió un error al registrar el libro',
-        HttpStatus.CONFLICT
+        HttpStatus.CONFLICT,
       );
     }
   }
@@ -53,7 +51,7 @@ export class BooksService {
 
     const skip = (page - 1) * limit;
     let query = {};
-    
+
     if (filter) {
       query = Object.keys(JSON.parse(filter)).reduce((acc, key) => {
         acc[key] = { $regex: new RegExp(JSON.parse(filter)[key], 'i') }; // Utiliza expresiones regulares insensibles a mayúsculas y minúsculas
@@ -64,29 +62,37 @@ export class BooksService {
     try {
       const [resultList, totalList] = await Promise.all([
         this.bookModule.find(query, '-__v -_id').skip(skip).limit(limit),
-        this.bookModule.countDocuments(query)
+        this.bookModule.countDocuments(query),
       ]);
 
       books = resultList;
       totalElements = totalList;
     } catch (error) {
-      throw new HttpException('Ocurrió un error al obtener los libros', HttpStatus.CONFLICT);
+      throw new HttpException(
+        'Ocurrió un error al obtener los libros',
+        HttpStatus.CONFLICT,
+      );
     }
 
     if (books.length === 0) {
-      throw new HttpException('No se encontraron elementos', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'No se encontraron elementos',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     return { books, totalElements };
   }
-  
+
   async findOne(id: string) {
-    var existingBook = "";
+    var existingBook = '';
     try {
       existingBook = await this.bookModule.findOne({ id });
-     
     } catch (error) {
-      throw new HttpException('Ocurrió un error al obtener el libro',HttpStatus.CONFLICT);
+      throw new HttpException(
+        'Ocurrió un error al obtener el libro',
+        HttpStatus.CONFLICT,
+      );
     }
     if (!existingBook) {
       throw new HttpException('El libro no se encontró', HttpStatus.NOT_FOUND);
@@ -95,34 +101,47 @@ export class BooksService {
   }
 
   async update(id: string, updateBookDto: UpdateBookDto) {
+    let updatedBook;
     try {
-      const updatedBook = await this.bookModule.findOneAndUpdate({ id }, updateBookDto, { new: true });
-      if (!updatedBook) {
-        throw new HttpException('El libro no se encontró', HttpStatus.NOT_FOUND);
-      }
-      return updatedBook;
+      updatedBook = await this.bookModule.findOneAndUpdate(
+        { id },
+        updateBookDto,
+        { new: true },
+      );
     } catch (error) {
       if (error.code === 11000 && error.keyPattern && error.keyPattern.title) {
         throw new HttpException(
           'Ya existe un libro con ese título, verificar información',
-          HttpStatus.CONFLICT
+          HttpStatus.CONFLICT,
         );
       }
       throw new HttpException(
         'Ocurrió un error al actualizar el libro',
-        HttpStatus.CONFLICT
+        HttpStatus.CONFLICT,
       );
     }
+    if (!updatedBook) {
+      throw new HttpException('El libro no se encontró', HttpStatus.NOT_FOUND);
+    }
+    return updatedBook;
   }
 
   async remove(id: string) {
+    let deletedBook
     try {
-      const deletedBook = await this.bookModule.findOneAndDelete({ id });
-      if (!deletedBook) {
-        throw new HttpException('El libro que se intento eliminar, no existe', HttpStatus.NOT_FOUND);
-      }
+      deletedBook = await this.bookModule.findOneAndDelete({ id });
+     
     } catch (error) {
-      throw new HttpException('Ocurrió un error al eliminar el libro',HttpStatus.CONFLICT);
+      throw new HttpException(
+        'Ocurrió un error al eliminar el libro',
+        HttpStatus.CONFLICT,
+      );
+    }
+    if (!deletedBook) {
+      throw new HttpException(
+        'El libro que se intento eliminar, no existe',
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }
