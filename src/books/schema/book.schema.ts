@@ -35,7 +35,6 @@ export class Book extends Document {
     @Prop({ required: true })
     @IsNotEmpty({ message: 'El ISBN es obligatorio' })
     @IsString({ message: 'El ISBN debe ser una cadena de caracteres' })
-    @IsISBN(13, { message: 'El ISBN debe tener 13 dígitos' })
     isbn: string;
 
     @Prop({ required: true })
@@ -67,7 +66,7 @@ export class Book extends Document {
     @Prop({ required: true })
     @IsNotEmpty({ message: 'El estado es obligatorio' })
     @IsString({ message: 'El estado debe ser una cadena de caracteres' })
-    @IsIn(['nuevo', 'usado', 'en préstamo'], { message: 'El estado debe ser "nuevo", "usado" o "en préstamo"' })
+    @IsIn(['nuevo', 'usado', 'en préstamo', 'en_préstamo', 'en_prestamo'], { message: 'El estado debe ser "nuevo", "usado" o "en préstamo"' })
     status: string;
 
     @Prop({ required: true })
